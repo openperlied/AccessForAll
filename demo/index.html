@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Volunteer shifts | Cedar Grove Food Share</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+      color: #193c32;
+      background: #fbfaf4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { background: #174835; color: #fff; padding: 1.25rem 0; }
+    header p, main, footer { width: min(40rem, 90%); margin-inline: auto; }
+    header p { margin-block: 0; font-weight: 700; }
+    main { padding-block: 2.5rem 1.5rem; }
+    h1, h2 { font-family: Georgia, serif; line-height: 1.15; }
+    h1 { font-size: clamp(2.6rem, 8vw, 4rem); margin-block: 0 1rem; }
+    p { line-height: 1.55; }
+    form { margin-top: 2rem; }
+    .field-caption { display: block; margin-bottom: 0.5rem; font-weight: 700; }
+    .search { display: flex; gap: 0.5rem; }
+    input, button { font: inherit; border-radius: 0.35rem; padding: 0.7rem; }
+    input { flex: 1; min-width: 0; border: 1px solid #5e736a; }
+    button { border: 0; padding-inline: 1rem; background: #174835; color: white; cursor: pointer; }
+    :focus-visible { outline: 3px solid #9d3d11; outline-offset: 3px; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { padding-block: 1rem; border-top: 1px solid #b5c2b7; }
+    h2 { margin: 0; font-size: 1.35rem; }
+    li p { margin: 0.35rem 0 0; }
+    footer { padding-bottom: 2rem; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <header><p>Cedar Grove Food Share</p></header>
+  <main>
+    <h1>Volunteer shifts</h1>
+    <p>Help get fresh food to neighbors in Cedar Grove. Enter a neighborhood and use the arrow to find a shift. Leave the field empty to see all shifts.</p>
+    <form>
+      <!-- Baseline audit targets: the visible caption is unassociated and the icon-only button has no name. -->
+      <span class="field-caption">Neighborhood</span>
+      <div class="search">
+        <input id="neighborhood" type="text">
+        <button type="submit"><span aria-hidden="true">&rarr;</span></button>
+      </div>
+    </form>
+    <p id="result-count" role="status">3 shifts available.</p>
+    <ul id="shift-list">
+      <li data-neighborhood="Riverside">
+        <h2>Pack produce boxes</h2>
+        <p>Riverside &middot; Monday, 9&ndash;11 am</p>
+      </li>
+      <li data-neighborhood="North End">
+        <h2>Welcome pantry visitors</h2>
+        <p>North End &middot; Wednesday, 2&ndash;4 pm</p>
+      </li>
+      <li data-neighborhood="Old Town">
+        <h2>Unload market deliveries</h2>
+        <p>Old Town &middot; Saturday, 8&ndash;10 am</p>
+      </li>
+    </ul>
+  </main>
+  <footer>Fictional food pantry for the AccessForAll accessibility demo.</footer>
+  <script>
+    const field = document.querySelector("#neighborhood");
+    const shifts = document.querySelectorAll("#shift-list li");
+    const resultCount = document.querySelector("#result-count");
+
+    document.querySelector("form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = field.value.trim().toLowerCase();
+      let count = 0;
+      for (const shift of shifts) {
+        shift.hidden = !shift.dataset.neighborhood.toLowerCase().includes(query);
+        if (!shift.hidden) count += 1;
+      }
+      resultCount.textContent = count === 0
+        ? "No shifts found. Try another neighborhood or clear the field."
+        : count + (count === 1 ? " shift available." : " shifts available.");
+    });
+  </script>
+</body>
+</html>
