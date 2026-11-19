@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pickup locations | Cedar Grove Food Share</title>
+  <link rel="stylesheet" href="pickup.css">
+  <script src="pickup.js" defer></script>
+</head>
+<body>
+  <header>Cedar Grove Food Share</header>
+  <main>
+    <h1>Find a pantry pickup</h1>
+    <p>Choose a location for this week’s hours and arrival instructions.</p>
+    <label class="caption" for="site">Pickup location</label>
+    <select id="site">
+      <option value="riverside">Riverside Hall</option>
+      <option value="market">Market Square</option>
+    </select>
+    <section aria-live="polite" aria-atomic="true" aria-labelledby="site-name">
+      <h2 id="site-name"></h2>
+      <p id="instructions"></p>
+    </section>
+  </main>
+</body>
+</html>

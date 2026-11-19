@@ -1,32 +1,38 @@
 # AccessForAll
 
-AccessForAll is an open-source project that aims to help nonprofits make their websites easier to use, free of charge. The first task focuses on a volunteer looking for a shift. Can someone using a screen reader tell where to enter a neighborhood and which button will show the results?
+AccessForAll helps contributors find and fix accessibility barriers on nonprofit websites. Its practice site, Cedar Grove Food Share, is a fictional food pantry. The project aims to offer this work to nonprofits free of charge.
 
-## Try the demo
+## Two tasks at the pantry
 
-[Cedar Grove Food Share](demo/index.html) is a fictional food pantry built for this project. Its volunteer directory runs locally and uses sample shifts. From the repository root, start a server with Python 3:
+| Visitor task | Pages | What the tests check |
+| --- | --- | --- |
+| A resident looks up pickup hours | [Original](demo/pickup/original.html) · [Repaired](demo/pickup/repaired.html) | The original location selector has no accessible name. A visible, associated label fixes it. The suite scans both pages before and after a keyboard user switches pickup sites and verifies the new arrival instructions. |
+| A volunteer searches for a shift | [Original](demo/index.html) · [Open repair task](https://github.com/openperlied/AccessForAll/issues/1) | The suite reproduces an unnamed textbox and button, finds the Riverside shift using the keyboard, checks the empty state, and restores all shifts. The repaired page is the next contribution. |
+
+## Run the audit
+
+Install Node.js 22 or newer. From a fresh checkout:
 
 ```sh
-python -m http.server 8000 --bind 127.0.0.1 --directory demo
+npm ci
+npx playwright install chromium
+npm test
 ```
 
-Open <http://127.0.0.1:8000/>. Enter **Riverside** and activate the arrow button. One shift should remain: **Pack produce boxes**. Clear the field and submit again to see all three shifts. You can also open `demo/index.html` directly in a browser.
+On Linux, use `npx playwright install --with-deps chromium` when the browser's system libraries are missing. To use an existing Google Chrome installation, set `ACCESSFORALL_BROWSER` to `chrome` before running the tests.
 
-## First milestone for Devin
+Playwright opens the bundled HTML files in a real browser and exercises each journey at 1280 and 390 pixels wide. At each audit checkpoint, axe-core inspects the rendered page. The suite compares rule IDs and selectors against the expected findings. A missing baseline defect, an unexpected violation, or a broken keyboard interaction fails the run.
 
-[Issue #1](https://github.com/openperlied/AccessForAll/issues/1) tracks the first deliverable: a repeatable accessibility audit for the volunteer search. The demo intentionally contains two defects:
+- `reports/audit.md` is the readable comparison by journey, viewport, and page state. [View a sample run](docs/sample-audit.md).
+- `reports/audit.json` records test outcomes, findings, impact, selectors, and errors for further analysis.
+- [GitHub Actions](https://github.com/openperlied/AccessForAll/actions/workflows/audit.yml) runs the same suite on pushes and pull requests and attaches the reports to the run.
 
-| Control | What a volunteer encounters | Expected axe-core rule |
-| --- | --- | --- |
-| Neighborhood field | The visible text “Neighborhood” is separate from the input. A screen reader can reach the field but has no label to announce. | `label` |
-| Search button | The arrow is hidden from assistive technology, leaving the button without an accessible name. | `button-name` |
+## Try it with a screen reader
 
-The planned pipeline uses **Playwright** to open the local demo in Chromium and exercise the search with the keyboard. **axe-core** will inspect the rendered page. The test should record each finding's rule ID and element selector, apply the same checks to a repaired version, and produce a Markdown summary and machine-readable results for both versions. Keep the original demo available so another contributor can reproduce the comparison.
+Open either pickup HTML file locally in Chrome. With NVDA on Windows, tab to the location selector. Compare the spoken control name on the original and repaired pages. The repaired control should announce “Pickup location” along with its value. Choose Market Square with the arrow keys, confirm the selection, and listen for Thursday's pickup hours and clock-tower directions. Record the browser, screen reader, and what you heard when reporting a discrepancy. Automated findings alone cannot establish how this interaction sounds.
 
-The milestone is complete when a contributor can run one documented command after setup, see both findings on the original, and verify that the repaired controls have meaningful names and that keyboard search still returns the expected shift. Automated checks cover part of the experience. The report should also explain how to check the controls with a screen reader.
+## Contribute
 
-## Working with nonprofits
+[Issue #1](https://github.com/openperlied/AccessForAll/issues/1) is ready for Devin or a first contributor. Use the pickup repair as a worked example for volunteer search. The fixture pages are in `demo/`, interaction checks and audit assertions are in `tests/`, and viewport settings are in `playwright.config.js`.
 
-After the demo workflow is reproducible, the next step is to invite a nonprofit to choose a page and a task that matters to its visitors. The project will ask for permission before auditing a partner site or proposing changes. This first milestone uses the fictional pantry only.
-
-Contributions are welcome through GitHub issues and pull requests. Code is available under the [MIT License](LICENSE).
+The next step with a participating nonprofit is to agree on one page and one visitor task before auditing or proposing changes. All current fixtures use fictional data. Code is available under the [MIT License](LICENSE).
